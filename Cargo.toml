@@ -1,0 +1,7 @@
+[package]
+name = "event-rs"
+version = "0.1.0"
+authors = ["Jon0 <Jono4728@gmail.com>"]
+
+[dependencies]
+libc = "0.2"
