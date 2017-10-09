@@ -4,4 +4,6 @@ version = "0.1.0"
 authors = ["Jon0 <Jono4728@gmail.com>"]
 
 [dependencies]
+num = "0.1"
 libc = "0.2"
+inotify-sys = "0.1.1"

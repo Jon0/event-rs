@@ -1,7 +1,7 @@
 use std::mem;
 use libc::*;
 
-use epoll::*;
+use system::epoll::*;
 
 
 fn create_addr(family: i32, addr: u32, port: u16) -> sockaddr_in {
