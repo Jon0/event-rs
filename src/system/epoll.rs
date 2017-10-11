@@ -1,33 +1,31 @@
+use std::io::Result;
 use libc::*;
 
+use system::file::{cvtf, FileDesc};
 
-pub struct EventHandler {
-    epollfd: i32,
+
+pub struct EPoll {
+    fd: FileDesc,
 }
 
 
-impl EventHandler {
-    pub fn create() -> EventHandler {
+impl EPoll {
+    pub fn new() -> Result<EPoll> {
+        return cvtf(unsafe {epoll_create1(EPOLL_CLOEXEC)}, |r| EPoll {fd: FileDesc::create(r)});
+    }
+
+    pub fn add_source(&self, fd: &FileDesc) {
+        let events = (EPOLLIN | EPOLLET) as u32;
+        let mut ev = epoll_event { events: events, u64: 0 };
         unsafe {
-            let efd = epoll_create1(0);
-            return EventHandler{ epollfd: efd };
+            let result = epoll_ctl(self.fd.raw_fd(), EPOLL_CTL_ADD, fd.raw_fd(), &mut ev);
         }
     }
 
-
-    pub fn add_source(&self, fd: i32) {
-        let mut ev = epoll_event { events: 0, u64: 0 };
-        unsafe {
-            let result = epoll_ctl(self.epollfd, EPOLL_CTL_ADD, fd, &mut ev);
-        }
-    }
-
-
-
-    pub fn poll(&self) {
+    pub fn wait(&self) {
         let mut event = [epoll_event { events: 0, u64: 0 }; 32];
         unsafe {
-            let result = epoll_wait(self.epollfd, event.as_mut_ptr(), event.len() as i32, -1);
+            let result = epoll_wait(self.fd.raw_fd(), event.as_mut_ptr(), event.len() as i32, -1);
         }
 
     }
@@ -35,5 +33,5 @@ impl EventHandler {
 
 
 pub trait EventSource {
-    fn listen(&self, handler: &mut EventHandler);
+    fn listen(&self, handler: &mut EPoll);
 }

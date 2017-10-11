@@ -42,11 +42,20 @@ impl FileDesc {
 
     pub fn open(filepath: &str) -> Result<FileDesc> {
         let path = CString::new(filepath).unwrap();
-        return cvtf(unsafe {open(path.as_ptr(), O_RDONLY)}, FileDesc::create);
+        return cvtf(unsafe {open(path.as_ptr(), O_RDONLY | O_NONBLOCK)}, FileDesc::create);
+    }
+
+    pub fn seek(&self, offset: usize) {
+        unsafe {lseek (self.fd, offset as i64, SEEK_SET)};
     }
 
     pub fn read(&self, buf: &mut [u8]) -> Result<usize> {
         let ret = cvt(unsafe {read(self.fd, buf.as_mut_ptr() as *mut c_void, buf.len())}).unwrap();
+        Ok(ret as usize)
+    }
+
+    pub fn read_at(&self, buf: &mut [u8], offset: usize) -> Result<usize> {
+        let ret = cvt(unsafe {pread(self.fd, buf.as_mut_ptr() as *mut c_void, buf.len(), offset as i64)}).unwrap();
         Ok(ret as usize)
     }
 }
