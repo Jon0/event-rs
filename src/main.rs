@@ -1,7 +1,9 @@
 extern crate num;
 extern crate libc;
+extern crate nix;
 extern crate inotify_sys;
 
+mod event;
 mod system;
 
 use std::env;
