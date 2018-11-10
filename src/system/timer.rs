@@ -1,8 +1,6 @@
 use std::io::Result;
 use std::ptr;
 use libc::*;
-
-use system::ffi::timerfd::*;
 use system::file::{cvtf, FileDesc};
 
 pub struct Timer {

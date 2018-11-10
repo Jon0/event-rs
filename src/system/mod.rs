@@ -1,4 +1,3 @@
-mod ffi;
 pub mod epoll;
 pub mod file;
 pub mod inotify;
